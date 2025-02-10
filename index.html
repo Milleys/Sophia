@@ -98,16 +98,20 @@
     document.getElementById("noBtn").addEventListener("click", function () {
         let sadGif = document.getElementById("sadGif");
         let valenv = document.getElementById("valenv");
+        let yb = document.getElementById("yesBtn");
 
         // Show GIF
         sadGif.style.display = "block";
         valenv.style.display = "none";
+        yb.disabled = true;
+
 
 
         // Hide GIF after it plays (Assuming the GIF is 3s long)
         setTimeout(() => {
             sadGif.style.display = "none";
             valenv.style.display = "block";
+            yb.disabled = false;
         }, 3000); // Adjust this time based on the actual GIF duration
     });
 </script>
@@ -117,10 +121,12 @@
         let yayGif = document.getElementById("yayGif");
         let smileGif = document.getElementById("smileGif");
         let valenv = document.getElementById("valenv");
+        let nb = document.getElementById("noBtn");
 
         // Show yay.gif first
         yayGif.style.display = "inline-block";
         valenv.style.display = "none";
+        nb.disabled = true;
 
         // After 2 seconds, hide yay.gif and show smile.gif
         // After 2 seconds, hide yay.gif and show smile.gif
@@ -130,6 +136,7 @@
 
             // After another 2 seconds, redirect to photobooth.html
             setTimeout(() => {
+             
                 window.location.href = "photobooth.html";
             }, 2000);  // Adjust delay as needed
         }, 2000);
