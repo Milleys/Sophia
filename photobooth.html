@@ -6,33 +6,41 @@
     <title>Take 3 Pictures</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body::before {
-            content: "";
-            background: url('img/bg.png') no-repeat center center/cover;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0.3;
-            z-index: -1;
-        }
-        video {
+           body::before {
+                content: "";
+                background: url('img/bg.png') no-repeat center center/cover;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                opacity: 0.3; /* Adjust transparency */
+                z-index: -1;
+            }
+        video{
             border-radius: 15px;
             width: 100%;
             max-width: 300px;
         }
-        canvas {
+
+        canvas{
             border-radius: 0px;
             width: 100%;
             max-width: 300px;
-            background-color: lightgray;
-            border: 2px dashed gray;
+            background-color: lightgray; /* Placeholder before capturing */
+            border: 2px dashed gray; /* Make the frame visible */
         }
         .photo-frame {
             border: 5px solid white;
             background-color: white;
             padding: 10px;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap');
+
+        .great-vibes {
+            font-family: "Great Vibes", serif; /* Use 'cursive' instead of 'serif' */
+            font-weight: 400;
+            font-style: normal;
         }
         .btn-pink {
             background-color: #ff4d6d;
@@ -41,10 +49,12 @@
             font-size: 14px;
             padding: 8px 15px;
         }
+
         .btn-pink:hover {
             background-color: #e63956;
             color: white;
         }
+
         .btn-red {
             background-color: #d62828;
             color: white;
@@ -52,40 +62,62 @@
             font-size: 14px;
             padding: 8px 15px;
         }
+
         .btn-red:hover {
             background-color: #a61d1d;
             color: white;
         }
-        .signature {
-            font-family: cursive;
-            font-size: 24px;
-            color: #d62828;
+
+        .shadow-sm {
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
+
+        
+    .signature {
+        font-family: cursive;
+        font-size: 24px;
+        color: #d62828;
+    }
+
+
+
     </style>
 </head>
 <body>
     <div class="container mt-5">
-        <h1 class="text-center mb-4">📸 Take 3 Pictures</h1>
+        <h1 class="text-center mb-4 great-vibes">📸 Take 3 Pictures</h1>
+    
         <div class="row justify-content-center">
+            <!-- Left Side: Camera, Name Input & Buttons -->
             <div class="col-md-5 text-center">
-                <h5>Photo Booth</h5>
+                <h5 class="great-vibes">Photo Booth</h5>
+              
                 <video id="camera" autoplay playsinline muted></video>
+                <button id="startCameraBtn" class="btn btn-primary mb-2 ">Start Camera</button>
+                <!-- Name Input directly below the camera -->
                 <div class="mt-3">
                     <input type="text" id="userName" class="form-control w-25 mx-auto" placeholder="Enter your name">
                 </div>
+    
+                <!-- Buttons directly below the name input -->
                 <div class="mt-3">
                     <button id="captureBtn" class="btn btn-pink btn-md rounded-pill shadow-sm">
                         ❤️ Capture Love
                     </button>
+    
                     <button id="retakeBtn" class="btn btn-light text-danger btn-md rounded-pill border border-danger shadow-sm" style="display: none;">
                         🔄 Try Again, Cupid!
                     </button>
+    
                     <button id="downloadBtn" class="btn btn-red btn-md rounded-pill shadow-sm" style="display: none;">
                         💌 Save Memory
                     </button>
                 </div>
             </div>
+    
+            <!-- Right Side: Captured Images -->
             <div class="col-md-5 text-center">
+                
                 <div class="d-flex flex-column align-items-center">
                     <canvas id="canvas1" class="photo-frame"></canvas>
                     <canvas id="canvas2" class="photo-frame"></canvas>
@@ -94,16 +126,18 @@
             </div>
         </div>
     </div>
+    
 
-    <footer class="text-end pe-3 mt-5">
-        <p class="signature">-Wil</p>
-    </footer>
-
+    <!-- Footer -->
+<footer class="text-end pe-3 mt-5">
+    <p class="signature">-Wil</p>
+</footer>
     <script>
         const video = document.getElementById("camera");
         const captureBtn = document.getElementById("captureBtn");
         const retakeBtn = document.getElementById("retakeBtn");
         const downloadBtn = document.getElementById("downloadBtn");
+        const startCameraBtn = document.getElementById("startCameraBtn");
         const userNameInput = document.getElementById("userName");
     
         const canvas1 = document.getElementById("canvas1");
@@ -113,53 +147,37 @@
         let captureCount = 0;
         let capturedImages = [];
     
-        // Function to detect if the user is on a mobile device
-        function isMobile() {
-            return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-        }
-    
-        // Function to start the camera
-        function startCamera() {
-            let constraints = {
-                video: {
-                    facingMode: isMobile() ? { exact: "environment" } : "user"
-                }
-            };
-    
-            navigator.mediaDevices.getUserMedia(constraints)
+        startCameraBtn.addEventListener("click", function () {
+            navigator.mediaDevices.getUserMedia({ video: true })
                 .then(stream => {
                     video.srcObject = stream;
+                    video.style.display = "block";
+                    captureBtn.disabled = false;
                 })
                 .catch(error => {
-                    console.error("Error accessing camera:", error);
+                    console.error("Error accessing camera: ", error);
                     alert("Camera access is required!");
                 });
-        }
-    
-        // Ensure camera starts only after user interaction (fixes iOS autoplay restrictions)
-        document.addEventListener("DOMContentLoaded", () => {
-            document.body.addEventListener("click", () => {
-                if (!video.srcObject) {
-                    startCamera();
-                }
-            }, { once: true });
         });
+
+
     
         // Capture Image
         captureBtn.addEventListener("click", function () {
             if (captureCount < 3) {
                 let canvas = [canvas1, canvas2, canvas3][captureCount];
                 let context = canvas.getContext("2d");
-                canvas.width = video.videoWidth / 2;
+                canvas.width = video.videoWidth / 2; // Reduce size
                 canvas.height = video.videoHeight / 2;
                 context.drawImage(video, 0, 0, canvas.width, canvas.height);
                 canvas.style.display = "block";
                 capturedImages.push(canvas.toDataURL("image/png"));
                 captureCount++;
             }
+    
             if (captureCount === 3) {
                 createFinalImage();
-                retakeBtn.style.display = "inline-block";
+                retakeBtn.style.display = "inline-block"; // Show Retake Button
             }
         });
     
@@ -167,9 +185,13 @@
         retakeBtn.addEventListener("click", function () {
             captureCount = 0;
             capturedImages = [];
+    
+            // Hide canvases
             canvas1.style.display = "none";
             canvas2.style.display = "none";
             canvas3.style.display = "none";
+    
+            // Hide buttons
             downloadBtn.style.display = "none";
             retakeBtn.style.display = "none";
         });
@@ -183,11 +205,13 @@
             let imgWidth = canvas1.width;
     
             finalCanvas.width = imgWidth;
-            finalCanvas.height = imgHeight * 3 + 80;
+            finalCanvas.height = imgHeight * 3 + 80; // Extra space for text
     
+            // Fill background with white
             context.fillStyle = "white";
             context.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
     
+            // Draw the three images with spacing
             let yOffset = 10;
             for (let i = 0; i < capturedImages.length; i++) {
                 let img = new Image();
@@ -197,14 +221,18 @@
                     yOffset += imgHeight + 10;
     
                     if (i === 2) {
+                        // Add text (Name & Date) under last image
                         let userName = userNameInput.value || " ";
                         let currentDate = new Date().toLocaleDateString();
     
                         context.fillStyle = "black";
-                        context.font = "20px 'Great Vibes', cursive";
+                        context.font = "20px 'Great Vibes', cursive"; // Apply the new font
                         context.textAlign = "left";
+    
+                        // Draw Name (Left)
                         context.fillText(userName, 10, yOffset + 5);
     
+                        // Draw Date (Right)
                         context.textAlign = "right";
                         context.fillText(currentDate, finalCanvas.width - 10, yOffset + 5);
     
@@ -221,6 +249,5 @@
             }
         }
     </script>
-    
 </body>
 </html>
